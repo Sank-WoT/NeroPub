@@ -166,7 +166,6 @@
 
 .node {
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .node:hover {
@@ -179,11 +178,15 @@
 
 .node circle {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  transition: all 0.3s ease;
 }
 
 .node:hover circle {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* Disable transitions during drag to prevent twitching */
+.node.active * {
+  transition: none !important;
 }
 
 .connection {
