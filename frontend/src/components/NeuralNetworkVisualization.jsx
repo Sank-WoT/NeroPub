@@ -147,8 +147,11 @@ const NeuralNetworkVisualization = () => {
       .attr("font-size", "9px")
       .text(d => `b: ${d.bias?.toFixed(2) || '0.00'}`);
 
-    // Click handler for nodes
+    // Click handler for nodes - prevent interference with drag
     nodeGroups.on("click", function(event, d) {
+      // Only handle click if it's not a drag operation
+      if (event.defaultPrevented) return; // dragging
+      
       event.stopPropagation();
       setSelectedNode(d);
       setShowEditor(true);
