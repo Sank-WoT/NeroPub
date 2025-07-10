@@ -253,8 +253,13 @@ const NeuralNetworkVisualization = () => {
   return (
     <div className="neural-network-container">
       <header className="network-header">
-        <h1>Neural Network with Skip Connections</h1>
-        <p>Click nodes to modify • Drag to reposition • Interactive perceptrons</p>
+        <h1>PyTorch CustomPerceptron Visualization</h1>
+        <p>Based on your neural network code • Click nodes to modify • Drag to reposition</p>
+        <div className="pytorch-code-info">
+          <code>
+            Input(10) → Layer1(50) → Layer2(50) → Output(1) + Skip(Layer1→Output)
+          </code>
+        </div>
       </header>
       
       <div className="network-controls">
