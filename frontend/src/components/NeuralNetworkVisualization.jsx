@@ -154,17 +154,23 @@ const NeuralNetworkVisualization = () => {
       setShowEditor(true);
     });
 
-    // Drag functions
+    // Drag functions - fixed to prevent twitching
     function dragstarted(event, d) {
+      event.sourceEvent.stopPropagation();
       d3.select(this).raise().classed("active", true);
+      // Disable CSS transitions during drag
+      d3.select(this).style("transition", "none");
     }
 
     function dragged(event, d) {
+      // Update the data coordinates
       d.x = event.x;
       d.y = event.y;
+      
+      // Update the node position
       d3.select(this).attr("transform", `translate(${d.x},${d.y})`);
       
-      // Update connections
+      // Update all connections involving this node
       g.selectAll(".connection")
         .filter(conn => conn.source.id === d.id || conn.target.id === d.id)
         .attr("x1", conn => conn.source.x)
@@ -175,6 +181,8 @@ const NeuralNetworkVisualization = () => {
 
     function dragended(event, d) {
       d3.select(this).classed("active", false);
+      // Re-enable CSS transitions
+      d3.select(this).style("transition", null);
     }
 
     // Add layer labels and PyTorch layer information
