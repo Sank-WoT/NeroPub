@@ -267,26 +267,59 @@ const NeuralNetworkVisualization = () => {
           className="control-btn"
           onClick={() => setNetworkData(mockNetworkData)}
         >
-          Reset Network
+          Reset PyTorch Model
         </button>
         <button 
           className="control-btn"
           onClick={() => {
-            // Add animation to show data flow
-            const connections = document.querySelectorAll('.connection');
+            // Animate the forward pass
+            const connections = document.querySelectorAll('.connection.regular');
+            const skipConnections = document.querySelectorAll('.connection.skip');
+            
+            // First show regular connections
             connections.forEach((conn, index) => {
               setTimeout(() => {
                 conn.style.strokeOpacity = '1';
-                conn.style.strokeWidth = '3px';
+                conn.style.strokeWidth = '2px';
                 setTimeout(() => {
-                  conn.style.strokeOpacity = '0.7';
+                  conn.style.strokeOpacity = '0.5';
                   conn.style.strokeWidth = '1px';
-                }, 500);
-              }, index * 100);
+                }, 300);
+              }, index * 50);
             });
+            
+            // Then show skip connections
+            setTimeout(() => {
+              skipConnections.forEach((conn, index) => {
+                setTimeout(() => {
+                  conn.style.strokeOpacity = '1';
+                  conn.style.strokeWidth = '3px';
+                  setTimeout(() => {
+                    conn.style.strokeOpacity = '0.7';
+                    conn.style.strokeWidth = '2px';
+                  }, 800);
+                }, index * 20);
+              });
+            }, 1000);
           }}
         >
-          Animate Flow
+          Animate Forward Pass
+        </button>
+        <button 
+          className="control-btn secondary"
+          onClick={() => {
+            // Show network statistics
+            const totalParams = 10*50 + 50*50 + 50*1 + 50*1; // based on PyTorch model
+            alert(`PyTorch Model Statistics:
+            - Total Parameters: ${totalParams.toLocaleString()}
+            - Layer1: ${10*50 + 50} parameters (Linear 10→50)
+            - Layer2: ${50*50 + 50} parameters (Linear 50→50)
+            - Layer3: ${50*1 + 1} parameters (Linear 50→1)
+            - Skip Connection: ${50*1 + 1} parameters (Linear 50→1)
+            - Total Skip Connections: ${mockNetworkData.skipConnections.length}`);
+          }}
+        >
+          Model Info
         </button>
       </div>
 
