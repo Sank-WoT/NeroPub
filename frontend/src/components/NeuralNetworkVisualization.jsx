@@ -325,6 +325,24 @@ const NeuralNetworkVisualization = () => {
 
       <div className="network-svg-container">
         <svg ref={svgRef}></svg>
+        <div className="network-legend">
+          <div className="legend-item">
+            <div className="legend-color input"></div>
+            <span>Input Layer (10 nodes)</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color hidden"></div>
+            <span>Hidden Layers (50 nodes each)</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color output"></div>
+            <span>Output Layer (1 node)</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-line skip"></div>
+            <span>Skip Connection (Layer1→Output)</span>
+          </div>
+        </div>
       </div>
 
       {showEditor && selectedNode && (
