@@ -48,10 +48,12 @@
 .network-controls {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 20px;
   padding: 20px;
   background: rgba(255, 255, 255, 0.8);
   border-bottom: 1px solid #ecf0f1;
+  flex-wrap: wrap;
 }
 
 .control-btn {
