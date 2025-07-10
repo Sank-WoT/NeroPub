@@ -193,7 +193,7 @@ const NeuralNetworkVisualization = () => {
       d3.select(this).style("transition", null);
     }
 
-    // Add layer labels and PyTorch layer information
+    // Add layer labels and PyTorch layer information with activation details
     networkData.layers.forEach((layer, index) => {
       const layerGroup = g.append("g");
       
@@ -207,14 +207,17 @@ const NeuralNetworkVisualization = () => {
         .attr("fill", "#2c3e50")
         .text(layer.name);
       
-      // Node count
+      // Node count and activation info
+      const activationInfo = layer.nodes.length > 0 ? 
+        ` (${layer.nodes[0].activation})` : '';
+      
       layerGroup.append("text")
         .attr("x", index * layerWidth + layerWidth / 2)
         .attr("y", -25)
         .attr("text-anchor", "middle")
         .attr("font-size", "11px")
         .attr("fill", "#7f8c8d")
-        .text(`${layer.nodes.length} nodes`);
+        .text(`${layer.nodes.length} nodes${activationInfo}`);
     });
 
     // Add PyTorch code reference
