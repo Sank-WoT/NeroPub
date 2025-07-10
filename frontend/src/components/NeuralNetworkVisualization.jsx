@@ -225,18 +225,8 @@ const NeuralNetworkVisualization = () => {
 
   }, [networkData]);
 
-  const handleNodeUpdate = (updatedNode) => {
-    setNetworkData(prev => ({
-      ...prev,
-      layers: prev.layers.map(layer => ({
-        ...layer,
-        nodes: layer.nodes.map(node => 
-          node.id === updatedNode.id ? updatedNode : node
-        )
-      }))
-    }));
-    setShowEditor(false);
-    setSelectedNode(null);
+  const handleCodeParsing = (parsedNetworkData) => {
+    setNetworkData(parsedNetworkData);
   };
 
   return (
