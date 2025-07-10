@@ -234,7 +234,7 @@ const NeuralNetworkVisualization = () => {
         <p>Based on your neural network code • Click nodes to modify • Drag to reposition</p>
         <div className="pytorch-code-info">
           <code>
-            Input(10) → Layer1(50) → Layer2(50) → Output(1) + Skip(Layer1→Output)
+            Input(5) → Layer1(10) → Layer2(10) → Output(1) + Skip(Layer1→Output)
           </code>
         </div>
       </header>
