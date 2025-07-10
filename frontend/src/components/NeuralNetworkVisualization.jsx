@@ -144,12 +144,12 @@ const NeuralNetworkVisualization = () => {
         return d.activation || 'ReLU';
       });
 
-    // Add bias display
+    // Add bias display with better positioning
     nodeGroups.append("text")
       .attr("text-anchor", "middle")
-      .attr("dy", "-35px")
+      .attr("dy", d => d.type === 'output' ? "-35px" : "-25px")
       .attr("fill", "#7f8c8d")
-      .attr("font-size", "9px")
+      .attr("font-size", "8px")
       .text(d => `b: ${d.bias?.toFixed(2) || '0.00'}`);
 
     // Click handler for nodes - prevent interference with drag
