@@ -131,18 +131,13 @@ const NeuralNetworkVisualization = () => {
         return d.id;
       });
 
-    // Only show activation labels for input and output layers
+    // Show activation labels for all layers
     nodeGroups.append("text")
       .attr("text-anchor", "middle")
-      .attr("dy", d => d.type === 'output' ? "35px" : "25px")
+      .attr("dy", d => d.type === 'output' ? "40px" : "30px")
       .attr("fill", "#2c3e50")
       .attr("font-size", "9px")
-      .text(d => {
-        if (d.type === 'input' || d.type === 'output') {
-          return d.activation || 'Linear';
-        }
-        return ''; // Don't show for hidden nodes
-      });
+      .text(d => d.activation || 'ReLU');
 
     // Add bias display
     nodeGroups.append("text")
