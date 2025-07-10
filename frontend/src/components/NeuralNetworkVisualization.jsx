@@ -14,26 +14,51 @@ const NeuralNetworkVisualization = () => {
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    const width = 1200;
-    const height = 800;
-    const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+    const width = 1400;
+    const height = 900;
+    const margin = { top: 80, right: 50, bottom: 50, left: 50 };
 
     svg.attr("width", width).attr("height", height);
 
     const g = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Create layers
+    // Create layers with special positioning for large layers
     const layerWidth = (width - margin.left - margin.right) / networkData.layers.length;
     const layers = networkData.layers.map((layer, layerIndex) => {
-      const nodeHeight = (height - margin.top - margin.bottom) / layer.nodes.length;
-      return layer.nodes.map((node, nodeIndex) => ({
-        ...node,
-        x: layerIndex * layerWidth + layerWidth / 2,
-        y: nodeIndex * nodeHeight + nodeHeight / 2,
-        layerIndex,
-        nodeIndex
-      }));
+      const availableHeight = height - margin.top - margin.bottom;
+      const nodeCount = layer.nodes.length;
+      
+      // For large layers, arrange nodes in a more compact way
+      if (nodeCount > 10) {
+        const nodesPerColumn = Math.ceil(Math.sqrt(nodeCount));
+        const columns = Math.ceil(nodeCount / nodesPerColumn);
+        const columnWidth = layerWidth * 0.6 / columns;
+        const rowHeight = availableHeight / nodesPerColumn;
+        
+        return layer.nodes.map((node, nodeIndex) => {
+          const column = Math.floor(nodeIndex / nodesPerColumn);
+          const row = nodeIndex % nodesPerColumn;
+          
+          return {
+            ...node,
+            x: layerIndex * layerWidth + layerWidth / 2 - (columns - 1) * columnWidth / 2 + column * columnWidth,
+            y: row * rowHeight + rowHeight / 2,
+            layerIndex,
+            nodeIndex
+          };
+        });
+      } else {
+        // For smaller layers, use vertical arrangement
+        const nodeHeight = availableHeight / nodeCount;
+        return layer.nodes.map((node, nodeIndex) => ({
+          ...node,
+          x: layerIndex * layerWidth + layerWidth / 2,
+          y: nodeIndex * nodeHeight + nodeHeight / 2,
+          layerIndex,
+          nodeIndex
+        }));
+      }
     }).flat();
 
     // Create connections
