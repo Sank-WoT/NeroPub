@@ -200,17 +200,39 @@ const NeuralNetworkVisualization = () => {
       d3.select(this).classed("active", false);
     }
 
-    // Add layer labels
+    // Add layer labels and PyTorch layer information
     networkData.layers.forEach((layer, index) => {
-      g.append("text")
+      const layerGroup = g.append("g");
+      
+      // Layer name
+      layerGroup.append("text")
         .attr("x", index * layerWidth + layerWidth / 2)
-        .attr("y", -20)
+        .attr("y", -40)
         .attr("text-anchor", "middle")
-        .attr("font-size", "16px")
+        .attr("font-size", "14px")
         .attr("font-weight", "bold")
         .attr("fill", "#2c3e50")
         .text(layer.name);
+      
+      // Node count
+      layerGroup.append("text")
+        .attr("x", index * layerWidth + layerWidth / 2)
+        .attr("y", -25)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "11px")
+        .attr("fill", "#7f8c8d")
+        .text(`${layer.nodes.length} nodes`);
     });
+
+    // Add PyTorch code reference
+    g.append("text")
+      .attr("x", (width - margin.left - margin.right) / 2)
+      .attr("y", height - margin.top - margin.bottom + 30)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "12px")
+      .attr("font-weight", "bold")
+      .attr("fill", "#e74c3c")
+      .text("PyTorch: return layer3(layer2(layer1(x))) + skip_connection(layer1(x))");
 
   }, [networkData]);
 
