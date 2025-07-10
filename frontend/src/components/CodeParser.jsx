@@ -127,7 +127,7 @@ const CodeParser = ({ onNetworkGenerated }) => {
   };
 
   const generateNetworkData = (parsedData) => {
-    const { layers, activations, forwardAnalysis } = parsedData;
+    const { layers, activationDefs, forwardAnalysis } = parsedData;
     const networkLayers = [];
     
     // Determine input size from first layer
@@ -152,7 +152,9 @@ const CodeParser = ({ onNetworkGenerated }) => {
       const layerType = isLastLayer ? "output" : "hidden";
       const outputSize = layerInfo.outputSize;
       
-      const layerActivation = activations[layerName] || (isLastLayer ? "Linear" : "ReLU");
+      // Get activation for this layer from forward pass analysis
+      const layerActivation = forwardAnalysis.layerActivations[layerName] || 
+                             (isLastLayer ? "Linear" : "ReLU");
       
       if (isLastLayer && outputSize === 1) {
         // Single output node
@@ -163,19 +165,20 @@ const CodeParser = ({ onNetworkGenerated }) => {
             type: "output",
             bias: 0.0,
             activation: layerActivation,
-            description: `Output from ${layerName}`
+            description: `Output from ${layerName} with ${layerActivation} activation`
           }]
         });
       } else {
         // Multiple nodes
+        const activationSuffix = layerActivation !== 'ReLU' ? ` + ${layerActivation}` : '';
         networkLayers.push({
-          name: `${layerName}: ${layerInfo.type}(${layerInfo.inputSize}→${layerInfo.outputSize})`,
+          name: `${layerName}: ${layerInfo.type}(${layerInfo.inputSize}→${layerInfo.outputSize})${activationSuffix}`,
           nodes: Array.from({ length: outputSize }, (_, i) => ({
             id: `${layerName}_${i + 1}`,
             type: layerType,
             bias: Math.random() * 0.2 - 0.1,
             activation: layerActivation,
-            description: `${layerName} node ${i + 1}`
+            description: `${layerName} node ${i + 1} with ${layerActivation} activation`
           }))
         });
       }
@@ -206,6 +209,11 @@ const CodeParser = ({ onNetworkGenerated }) => {
       }
     }
 
+    // Create architecture info with detected activations
+    const detectedActivations = Object.entries(forwardAnalysis.layerActivations)
+      .map(([layer, activation]) => `${layer}: ${activation}`)
+      .join(', ');
+
     return {
       layers: networkLayers,
       skipConnections,
@@ -213,7 +221,12 @@ const CodeParser = ({ onNetworkGenerated }) => {
         framework: "PyTorch",
         className: "ParsedNetwork",
         description: "Neural network parsed from PyTorch code",
-        totalParams: calculateTotalParams(layers)
+        totalParams: calculateTotalParams(layers),
+        detectedActivations: detectedActivations || "Standard activations",
+        parsedLayers: Object.keys(layers).join(', '),
+        parsedActivations: Object.entries(activationDefs)
+          .map(([name, type]) => `${name}: ${type}`)
+          .join(', ')
       }
     };
   };
