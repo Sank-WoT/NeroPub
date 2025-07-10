@@ -168,20 +168,24 @@
   cursor: pointer;
 }
 
-.node:hover {
-  transform: scale(1.1);
-}
-
-.node.active {
-  transform: scale(1.2);
-}
-
+/* Remove hover transform on node group to prevent positioning conflicts */
 .node circle {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: filter 0.2s ease, stroke-width 0.2s ease;
 }
 
 .node:hover circle {
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  stroke-width: 3px;
+}
+
+/* Apply hover effect only to text, not the entire node */
+.node text {
+  transition: font-size 0.2s ease;
+}
+
+.node:hover text {
+  font-size: 1.1em;
 }
 
 /* Disable transitions during drag to prevent twitching */
