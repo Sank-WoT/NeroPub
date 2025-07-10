@@ -1,17 +1,17 @@
 // PyTorch CustomPerceptron Architecture Visualization
-// Based on the provided PyTorch code:
-// - Input: 10 nodes
-// - Layer1: Linear(10, 50) + ReLU
-// - Layer2: Linear(50, 50) + ReLU  
-// - Layer3: Linear(50, 1) (output)
-// - Skip connection: Linear(50, 1) from layer1 to output
+// Based on the updated PyTorch code:
+// - Input: 5 nodes
+// - Layer1: Linear(5, 10) + ReLU
+// - Layer2: Linear(10, 10) + ReLU  
+// - Layer3: Linear(10, 1) (output)
+// - Skip connection: Linear(10, 1) from layer1 to output
 // - Final output: layer3_output + skip_output
 
 export const mockNetworkData = {
   layers: [
     {
-      name: "Input Layer (10 nodes)",
-      nodes: Array.from({ length: 10 }, (_, i) => ({
+      name: "Input Layer (5 nodes)",
+      nodes: Array.from({ length: 5 }, (_, i) => ({
         id: `I${i + 1}`,
         type: "input",
         bias: 0,
@@ -20,8 +20,8 @@ export const mockNetworkData = {
       }))
     },
     {
-      name: "Layer 1: Linear(10→50) + ReLU",
-      nodes: Array.from({ length: 50 }, (_, i) => ({
+      name: "Layer 1: Linear(5→10) + ReLU",
+      nodes: Array.from({ length: 10 }, (_, i) => ({
         id: `L1_${i + 1}`,
         type: "hidden",
         bias: Math.random() * 0.2 - 0.1,
@@ -31,8 +31,8 @@ export const mockNetworkData = {
       }))
     },
     {
-      name: "Layer 2: Linear(50→50) + ReLU",
-      nodes: Array.from({ length: 50 }, (_, i) => ({
+      name: "Layer 2: Linear(10→10) + ReLU",
+      nodes: Array.from({ length: 10 }, (_, i) => ({
         id: `L2_${i + 1}`,
         type: "hidden",
         bias: Math.random() * 0.2 - 0.1,
@@ -42,7 +42,7 @@ export const mockNetworkData = {
       }))
     },
     {
-      name: "Output Layer: Linear(50→1) + Skip",
+      name: "Output Layer: Linear(10→1) + Skip",
       nodes: [
         {
           id: "Output",
@@ -57,8 +57,8 @@ export const mockNetworkData = {
   ],
   skipConnections: [
     // Skip connection from Layer1 to Output (bypassing Layer2)
-    // This represents the skip_connection = nn.Linear(50, 1) in the PyTorch code
-    ...Array.from({ length: 50 }, (_, i) => ({
+    // This represents the skip_connection = nn.Linear(10, 1) in the PyTorch code
+    ...Array.from({ length: 10 }, (_, i) => ({
       from: 1, // from Layer1 (index 1)
       fromNode: i, // from each node in Layer1
       to: 3, // to Output Layer (index 3)
@@ -77,6 +77,13 @@ export const mockNetworkData = {
       "out3 = layer3(out2)",
       "skip_out = skip_connection(out1)",
       "return out3 + skip_out"
-    ]
+    ],
+    parameterCount: {
+      layer1: 5 * 10 + 10, // weights + bias
+      layer2: 10 * 10 + 10, // weights + bias
+      layer3: 10 * 1 + 1, // weights + bias
+      skip_connection: 10 * 1 + 1, // weights + bias
+      total: (5 * 10 + 10) + (10 * 10 + 10) + (10 * 1 + 1) + (10 * 1 + 1)
+    }
   }
 };
