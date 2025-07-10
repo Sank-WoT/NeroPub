@@ -244,9 +244,11 @@ const CodeParser = ({ onNetworkGenerated }) => {
       const lines = code.split('\n').map(line => line.trim()).filter(line => line);
       
       const layers = {};
-      const activations = {};
       let inForwardMethod = false;
       const forwardLines = [];
+      
+      // First pass: parse activation function definitions
+      const activationDefs = parseActivationDefinitions(lines);
       
       lines.forEach(line => {
         // Skip comments and empty lines
@@ -261,8 +263,9 @@ const CodeParser = ({ onNetworkGenerated }) => {
         if (inForwardMethod) {
           forwardLines.push(line);
         } else {
-          // Parse layer definitions
-          if (line.includes('self.') && line.includes('=')) {
+          // Parse layer definitions (nn.Linear, nn.Conv2d, etc.)
+          if (line.includes('self.') && line.includes('=') && 
+              (line.includes('nn.Linear') || line.includes('nn.Conv'))) {
             const layerMatch = line.match(/self\.(\w+)\s*=\s*(.*)/);
             if (layerMatch) {
               const layerName = layerMatch[1];
@@ -272,17 +275,12 @@ const CodeParser = ({ onNetworkGenerated }) => {
               if (layerInfo) {
                 layers[layerName] = layerInfo;
               }
-              
-              const activation = parseActivation(layerDef);
-              if (activation) {
-                activations[layerName] = activation;
-              }
             }
           }
         }
       });
       
-      const forwardAnalysis = parseForwardPass(forwardLines);
+      const forwardAnalysis = parseForwardPass(forwardLines, activationDefs);
       
       if (Object.keys(layers).length === 0) {
         alert('No PyTorch layers found in the code. Please make sure your code includes nn.Linear() definitions.');
@@ -291,12 +289,24 @@ const CodeParser = ({ onNetworkGenerated }) => {
       
       const networkData = generateNetworkData({
         layers,
-        activations,
+        activationDefs,
         forwardAnalysis
       });
       
       onNetworkGenerated(networkData);
       setIsVisible(false);
+      
+      // Show parsing success message
+      const activationInfo = networkData.architecture.parsedActivations;
+      alert(`✅ PyTorch Code Parsed Successfully!
+      
+📊 Detected:
+- Layers: ${networkData.architecture.parsedLayers}
+- Activations: ${activationInfo || 'Standard ReLU'}
+- Skip Connections: ${networkData.skipConnections.length}
+- Total Parameters: ${networkData.architecture.totalParams}
+
+🎯 Layer Activations: ${networkData.architecture.detectedActivations}`);
       
     } catch (error) {
       console.error('Error parsing code:', error);
