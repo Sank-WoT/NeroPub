@@ -302,22 +302,20 @@ const NeuralNetworkVisualization = () => {
           className="control-btn secondary"
           onClick={() => {
             // Show updated network statistics
-            const arch = mockNetworkData.architecture;
-            const totalParams = arch.parameterCount.total;
+            const arch = networkData.architecture;
+            const totalParams = arch?.totalParams || 182;
             alert(`PyTorch Model Statistics:
             - Total Parameters: ${totalParams.toLocaleString()}
-            - Layer1: ${arch.parameterCount.layer1} parameters (Linear 5→10)
-            - Layer2: ${arch.parameterCount.layer2} parameters (Linear 10→10)
-            - Layer3: ${arch.parameterCount.layer3} parameters (Linear 10→1)
-            - Skip Connection: ${arch.parameterCount.skip_connection} parameters (Linear 10→1)
-            - Total Skip Connections: ${mockNetworkData.skipConnections.length}
-            
-            Network Architecture:
-            ${arch.forwardPass.join('\n')}`);
+            - Framework: ${arch?.framework || 'PyTorch'}
+            - Class: ${arch?.className || 'CustomPerceptron'}
+            - Description: ${arch?.description || 'Neural network visualization'}
+            - Total Layers: ${networkData.layers.length}
+            - Total Skip Connections: ${networkData.skipConnections.length}`);
           }}
         >
           Model Info
         </button>
+        <CodeParser onNetworkGenerated={handleCodeParsing} />
       </div>
 
       <div className="network-svg-container">
