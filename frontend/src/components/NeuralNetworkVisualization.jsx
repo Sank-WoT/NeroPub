@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 import { mockNetworkData } from '../utils/mockData';
 import NodeEditor from './NodeEditor';
+import CodeParser from './CodeParser';
 import './NeuralNetworkVisualization.css';
 
 const NeuralNetworkVisualization = () => {
