@@ -23,42 +23,23 @@ const NeuralNetworkVisualization = () => {
     const g = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Create layers with special positioning for large layers
+    // Create layers with optimized positioning for smaller network
     const layerWidth = (width - margin.left - margin.right) / networkData.layers.length;
     const layers = networkData.layers.map((layer, layerIndex) => {
       const availableHeight = height - margin.top - margin.bottom;
       const nodeCount = layer.nodes.length;
       
-      // For large layers, arrange nodes in a more compact way
-      if (nodeCount > 10) {
-        const nodesPerColumn = Math.ceil(Math.sqrt(nodeCount));
-        const columns = Math.ceil(nodeCount / nodesPerColumn);
-        const columnWidth = layerWidth * 0.6 / columns;
-        const rowHeight = availableHeight / nodesPerColumn;
-        
-        return layer.nodes.map((node, nodeIndex) => {
-          const column = Math.floor(nodeIndex / nodesPerColumn);
-          const row = nodeIndex % nodesPerColumn;
-          
-          return {
-            ...node,
-            x: layerIndex * layerWidth + layerWidth / 2 - (columns - 1) * columnWidth / 2 + column * columnWidth,
-            y: row * rowHeight + rowHeight / 2,
-            layerIndex,
-            nodeIndex
-          };
-        });
-      } else {
-        // For smaller layers, use vertical arrangement
-        const nodeHeight = availableHeight / nodeCount;
-        return layer.nodes.map((node, nodeIndex) => ({
-          ...node,
-          x: layerIndex * layerWidth + layerWidth / 2,
-          y: nodeIndex * nodeHeight + nodeHeight / 2,
-          layerIndex,
-          nodeIndex
-        }));
-      }
+      // For this smaller network, use simple vertical arrangement
+      const nodeHeight = availableHeight / Math.max(nodeCount, 10); // minimum spacing
+      const startY = (availableHeight - (nodeCount - 1) * nodeHeight) / 2;
+      
+      return layer.nodes.map((node, nodeIndex) => ({
+        ...node,
+        x: layerIndex * layerWidth + layerWidth / 2,
+        y: startY + nodeIndex * nodeHeight,
+        layerIndex,
+        nodeIndex
+      }));
     }).flat();
 
     // Create connections
