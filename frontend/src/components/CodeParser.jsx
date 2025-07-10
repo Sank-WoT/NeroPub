@@ -322,18 +322,21 @@ class CustomPerceptron(nn.Module):
     def __init__(self):
         super().__init__()
         self.layer1 = nn.Linear(5, 10)
-        self.layer2 = nn.Linear(10, 10)
-        self.layer3 = nn.Linear(10, 1)
+        self.layer2 = nn.Linear(10, 15)
+        self.layer3 = nn.Linear(15, 1)
         
         # Skip connection
         self.skip_connection = nn.Linear(10, 1)
         
+        # Activation functions
         self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
+        self.tanh = nn.Tanh()
 
     def forward(self, x):
         out1 = self.relu(self.layer1(x))
-        out2 = self.relu(self.layer2(out1))
-        out3 = self.layer3(out2)
+        out2 = self.sigmoid(self.layer2(out1))
+        out3 = self.tanh(self.layer3(out2))
         
         # Skip connection
         skip_out = self.skip_connection(out1)
