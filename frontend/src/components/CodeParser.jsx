@@ -31,18 +31,44 @@ const CodeParser = ({ onNetworkGenerated }) => {
   };
 
   const parseActivation = (line) => {
+    // Parse activation function definitions like self.relu = nn.ReLU()
     if (line.includes('nn.ReLU()')) return 'ReLU';
     if (line.includes('nn.Sigmoid()')) return 'Sigmoid';
     if (line.includes('nn.Tanh()')) return 'Tanh';
     if (line.includes('nn.LeakyReLU()')) return 'LeakyReLU';
     if (line.includes('nn.Softmax()')) return 'Softmax';
     if (line.includes('nn.ELU()')) return 'ELU';
+    if (line.includes('nn.GELU()')) return 'GELU';
+    if (line.includes('nn.Swish()')) return 'Swish';
+    if (line.includes('nn.Mish()')) return 'Mish';
     return null;
   };
 
-  const parseForwardPass = (forwardLines) => {
+  const parseActivationDefinitions = (lines) => {
+    const activationDefs = {};
+    
+    lines.forEach(line => {
+      if (line.includes('self.') && line.includes('=') && !line.includes('nn.Linear') && !line.includes('nn.Conv')) {
+        const match = line.match(/self\.(\w+)\s*=\s*(.*)/);
+        if (match) {
+          const activationName = match[1];
+          const activationDef = match[2];
+          const activationType = parseActivation(activationDef);
+          
+          if (activationType) {
+            activationDefs[activationName] = activationType;
+          }
+        }
+      }
+    });
+    
+    return activationDefs;
+  };
+
+  const parseForwardPass = (forwardLines, activationDefs) => {
     const skipConnections = [];
     const layerFlow = [];
+    const layerActivations = {};
     
     forwardLines.forEach((line, index) => {
       // Look for skip connections (additions)
@@ -56,17 +82,48 @@ const CodeParser = ({ onNetworkGenerated }) => {
         }
       }
       
-      // Track layer flow
-      const outputMatch = line.match(/(\w+)\s*=\s*.*\((\w+)\)/);
+      // Track layer flow and activation usage
+      const outputMatch = line.match(/(\w+)\s*=\s*(.+)/);
       if (outputMatch) {
-        layerFlow.push({
-          output: outputMatch[1],
-          input: outputMatch[2]
+        const outputVar = outputMatch[1];
+        const expression = outputMatch[2];
+        
+        // Check if this line uses an activation function
+        Object.keys(activationDefs).forEach(actName => {
+          if (expression.includes(`self.${actName}(`)) {
+            // Extract the layer being activated
+            const layerMatch = expression.match(/self\.(\w+)\((.+)\)/);
+            if (layerMatch) {
+              const layerName = layerMatch[1];
+              if (layerName !== actName) { // Make sure it's not the activation itself
+                layerActivations[layerName] = activationDefs[actName];
+              }
+            }
+            // Also check for chained activations like self.relu(self.layer1(x))
+            const chainedMatch = expression.match(/self\.(\w+)\(self\.(\w+)\(/);
+            if (chainedMatch) {
+              const activationName = chainedMatch[1];
+              const layerName = chainedMatch[2];
+              if (activationDefs[activationName]) {
+                layerActivations[layerName] = activationDefs[activationName];
+              }
+            }
+          }
         });
+        
+        // Track the flow
+        const inputMatch = expression.match(/self\.(\w+)\((.+)\)/);
+        if (inputMatch) {
+          layerFlow.push({
+            output: outputVar,
+            layer: inputMatch[1],
+            input: inputMatch[2]
+          });
+        }
       }
     });
 
-    return { skipConnections, layerFlow };
+    return { skipConnections, layerFlow, layerActivations };
   };
 
   const generateNetworkData = (parsedData) => {
