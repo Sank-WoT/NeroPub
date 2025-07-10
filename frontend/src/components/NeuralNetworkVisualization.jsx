@@ -309,11 +309,11 @@ const NeuralNetworkVisualization = () => {
         <div className="network-legend">
           <div className="legend-item">
             <div className="legend-color input"></div>
-            <span>Input Layer (10 nodes)</span>
+            <span>Input Layer (5 nodes)</span>
           </div>
           <div className="legend-item">
             <div className="legend-color hidden"></div>
-            <span>Hidden Layers (50 nodes each)</span>
+            <span>Hidden Layers (10 nodes each)</span>
           </div>
           <div className="legend-item">
             <div className="legend-color output"></div>
