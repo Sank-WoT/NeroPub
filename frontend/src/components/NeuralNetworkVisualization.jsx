@@ -89,7 +89,7 @@ const NeuralNetworkVisualization = () => {
       .attr("stroke-opacity", d => Math.abs(d.weight) * 0.7 + 0.3)
       .attr("stroke-dasharray", d => d.type === 'skip' ? "5,5" : null);
 
-    // Draw nodes with different sizes based on layer type
+    // Draw nodes with better visibility for smaller network
     const nodeGroups = g.selectAll(".node")
       .data(layers)
       .enter().append("g")
@@ -103,9 +103,9 @@ const NeuralNetworkVisualization = () => {
 
     nodeGroups.append("circle")
       .attr("r", d => {
-        if (d.type === 'input') return 12;
-        if (d.type === 'output') return 20;
-        return 8; // hidden nodes are smaller for better visibility
+        if (d.type === 'input') return 20;
+        if (d.type === 'output') return 25;
+        return 15; // hidden nodes
       })
       .attr("fill", d => {
         switch(d.type) {
@@ -115,7 +115,7 @@ const NeuralNetworkVisualization = () => {
         }
       })
       .attr("stroke", "#2c3e50")
-      .attr("stroke-width", 1.5);
+      .attr("stroke-width", 2);
 
     // Only show node IDs for input and output layers for clarity
     nodeGroups.append("text")
