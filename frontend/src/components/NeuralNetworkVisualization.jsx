@@ -132,13 +132,17 @@ const NeuralNetworkVisualization = () => {
         return d.id;
       });
 
-    // Show activation labels for all layers
+    // Show activation labels for all layers with correct activation functions
     nodeGroups.append("text")
       .attr("text-anchor", "middle")
       .attr("dy", d => d.type === 'output' ? "40px" : "30px")
       .attr("fill", "#2c3e50")
       .attr("font-size", "9px")
-      .text(d => d.activation || 'ReLU');
+      .attr("font-weight", "bold")
+      .text(d => {
+        // Show the actual activation function assigned to this node
+        return d.activation || 'ReLU';
+      });
 
     // Add bias display
     nodeGroups.append("text")
