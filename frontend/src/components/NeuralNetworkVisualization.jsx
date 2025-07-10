@@ -136,13 +136,18 @@ const NeuralNetworkVisualization = () => {
       .attr("stroke", "#2c3e50")
       .attr("stroke-width", 1.5);
 
+    // Only show node IDs for input and output layers for clarity
     nodeGroups.append("text")
       .attr("text-anchor", "middle")
       .attr("dy", "0.35em")
       .attr("fill", "white")
-      .attr("font-size", "12px")
+      .attr("font-size", d => d.type === 'output' ? "12px" : "8px")
       .attr("font-weight", "bold")
-      .text(d => d.id);
+      .text(d => {
+        if (d.type === 'input') return `I${d.id.split('I')[1]}`;
+        if (d.type === 'output') return 'OUT';
+        return ''; // Don't show text for hidden nodes to avoid clutter
+      });
 
     // Add node labels
     nodeGroups.append("text")
