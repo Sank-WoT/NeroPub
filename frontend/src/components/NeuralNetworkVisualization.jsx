@@ -285,15 +285,19 @@ const NeuralNetworkVisualization = () => {
         <button 
           className="control-btn secondary"
           onClick={() => {
-            // Show network statistics
-            const totalParams = 10*50 + 50*50 + 50*1 + 50*1; // based on PyTorch model
+            // Show updated network statistics
+            const arch = mockNetworkData.architecture;
+            const totalParams = arch.parameterCount.total;
             alert(`PyTorch Model Statistics:
             - Total Parameters: ${totalParams.toLocaleString()}
-            - Layer1: ${10*50 + 50} parameters (Linear 10→50)
-            - Layer2: ${50*50 + 50} parameters (Linear 50→50)
-            - Layer3: ${50*1 + 1} parameters (Linear 50→1)
-            - Skip Connection: ${50*1 + 1} parameters (Linear 50→1)
-            - Total Skip Connections: ${mockNetworkData.skipConnections.length}`);
+            - Layer1: ${arch.parameterCount.layer1} parameters (Linear 5→10)
+            - Layer2: ${arch.parameterCount.layer2} parameters (Linear 10→10)
+            - Layer3: ${arch.parameterCount.layer3} parameters (Linear 10→1)
+            - Skip Connection: ${arch.parameterCount.skip_connection} parameters (Linear 10→1)
+            - Total Skip Connections: ${mockNetworkData.skipConnections.length}
+            
+            Network Architecture:
+            ${arch.forwardPass.join('\n')}`);
           }}
         >
           Model Info
