@@ -222,6 +222,13 @@
   pointer-events: none;
 }
 
+/* Activation function labels */
+.node text:nth-child(3) {
+  font-weight: bold;
+  fill: #e74c3c !important;
+  font-size: 10px !important;
+}
+
 /* Layer labels */
 svg text {
   font-family: 'Georgia', 'Times New Roman', serif;
